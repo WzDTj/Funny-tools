@@ -31,13 +31,15 @@ def get_md5code(file_path):
     new_file.close()
     return new_md5.hexdigest()
 
-#»ñÈ¡Ä¿Â¼²¢½øÈë
+# - main -
+
+#è·å–ç›®å½•å¹¶è¿›å…¥
 #dirctory = '/Users/Dantong/Downloads'
 #dirctory = '/'
 dirctory = get_dirctory()
 os.chdir(dirctory)
 
-#»ñÈ¡Ä¿Â¼ÏÂÎÄ¼ş£¬É¸Ñ¡£¬Éú³ÉMD5£¬´ò°ü³É×Öµä
+#è·å–ç›®å½•ä¸‹æ–‡ä»¶ï¼Œç­›é€‰ï¼Œç”ŸæˆMD5ï¼Œæ‰“åŒ…æˆå­—å…¸
 temp_files = os.listdir(dirctory)
 
 md5_code = []
@@ -50,26 +52,35 @@ for afile in temp_files:
     if os.path.isfile(file_path) and os.access(afile, os.R_OK):
         files.append(file_path)
         md5_code.append(get_md5code(file_path))
-#        print "File Path: " + file_path
-#        print "MD5 Code: " + get_md5code(file_path) 
+        print "File Path: " + file_path
+        print "MD5 Code: " + get_md5code(file_path) 
 
 dic = zip(md5_code, files)
 dic.sort()
 #print dic
 
+#å°†ç§»é™¤æ–‡ä»¶åˆ—è¡¨ï¼Œå†™å…¥æ–‡ä»¶ã€‚
+output = open('compare_list.txt', 'w')
+output.write(' - Repetition files - \n')
 remove_list = []
 prev = ('0', '')
 for afile in dic:
     if afile[0] == prev[0]:
         remove_list.append(afile)
-    prev = afile
+        output.write("%s| %s\n" %(afile[1].center(25), prev[1].center(25)))
 
-#ĞèÒªÉ¾³ıÇ°£¬ÁĞ³öÎÄ¼şÇåµ¥£¬²¢Ñ¯ÎÊÓÃ»§
+    prev = afile
+output.write(' - End - \n')
+output.close()
+
+#éœ€è¦åˆ é™¤å‰ï¼Œåˆ—å‡ºæ–‡ä»¶æ¸…å•ï¼Œå¹¶è¯¢é—®ç”¨æˆ·
 if len(remove_list) == 0:
     print " - No repetition file - "
 else:
     print " - These files will be removed - \n"
-    for afile in remove_list: print ' - ' + afile[1]
+    for afile in remove_list:
+        print ' - ' + afile[1]
+    print " - Total %d item(s) - " %(len(remove_list))
     print " - End - \n"
 
     flag = ''
@@ -79,6 +90,7 @@ else:
         if flag == 'y':
             for afile in remove_list:
                 os.remove(afile[1])
+                print " - %s was removed - " %(afile[1])
             print ' - Clear - '
 
 print ' - Over - '
